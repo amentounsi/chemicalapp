@@ -1,0 +1,68 @@
+/* Conteneur général */
+.container {
+  background-color: #f9f9f9;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Titre principal */
+h2 {
+  text-align: center;
+  color: #1a1a1a;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* Tableau stylisé */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1e1e1e;
+  color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+}
+
+/* En-têtes du tableau */
+table thead {
+  background-color: #343a40;
+}
+
+table thead th {
+  padding: 15px;
+  text-align: left;
+  font-size: 16px;
+  color: #ffffff;
+  border-bottom: 2px solid #555;
+}
+
+/* Lignes et cellules */
+table td {
+  padding: 14px;
+  border-bottom: 1px solid #444;
+  vertical-align: top;
+  font-size: 15px;
+}
+
+/* Petits textes (traductions) */
+table small {
+  display: block;
+  color: #bbb;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* Lignes alternées */
+table tbody tr:nth-child(odd) {
+  background-color: #292929;
+}
+
+table tbody tr:hover {
+  background-color: #3c3c3c;
+  transition: background-color 0.3s ease;
+}

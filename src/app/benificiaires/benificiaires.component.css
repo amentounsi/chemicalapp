@@ -1,0 +1,60 @@
+/* Style général de la page */
+.container {
+  background-color: #f8f9fa;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Titre principal */
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Description */
+p.text-muted {
+  font-style: italic;
+  color: #6c757d;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Tableau Bootstrap avec fond sombre */
+table.table-dark {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Entête du tableau */
+table thead th {
+  background-color: #343a40;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Cellules du tableau */
+table td, table th {
+  border: 1px solid #444;
+  padding: 14px;
+  vertical-align: top;
+}
+
+/* Lignes alternées */
+table tbody tr:nth-child(odd) {
+  background-color: #2a2a2a;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #1c1c1c;
+}
+
+/* Effet au survol */
+table tbody tr:hover {
+  background-color: #444 !important;
+  transition: background-color 0.3s ease;
+}
