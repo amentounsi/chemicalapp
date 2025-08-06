@@ -10,7 +10,7 @@
 /* Titre principal */
 h2 {
   text-align: center;
-  color: #1a1a1a;
+  color: green;
   margin-bottom: 30px;
   font-size: 1.8rem;
   font-weight: 600;
@@ -20,7 +20,7 @@ h2 {
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #1e1e1e;
+  background-color: green;
   color: #fff;
   border-radius: 8px;
   overflow: hidden;
