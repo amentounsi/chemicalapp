@@ -1,46 +1,203 @@
-<div class="container mt-5">
-  <h2 class="text-center">📌 Bénéficiaires des Services du CNSTN – Sidi Thabet / سيدي ثابت</h2>
-  <p class="text-muted text-center">Services scientifiques, agricoles et médicaux fournis par le CNSTN</p>
+<div class="ben-header d-flex flex-column align-items-center mb-4 p-3 rounded shadow-sm bg-white" appRevealOnScroll>
+  <img src="assets/image/logo.jpg" alt="CNSTN Logo" class="ben-logo mb-2" style="max-width: 90px; height: auto;" />
+  <h2 class="text-center mb-1 section-title">📌 Bénéficiaires des Services du CNSTN – Sidi Thabet / سيدي ثابت</h2>
+  <p class="text-muted text-center mb-0">Services scientifiques, agricoles et médicaux fournis par le CNSTN</p>
+  <button class="btn btn-success mt-3" (click)="addBenificiaire()" *ngIf="!isFormVisible">Ajouter un bénéficiaire</button>
+</div>
 
-  <table class="table table-dark table-bordered table-hover mt-4">
+<!-- Success/Error Messages -->
+<div class="alert-container" *ngIf="message">
+  <div class="alert" [class]="'alert-' + (messageType === 'success' ? 'success' : 'danger')">
+    {{ message }}
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-container" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- Dynamic Form Section -->
+<div class="form-container" *ngIf="isFormVisible" appRevealOnScroll>
+  <div class="form-header">
+    <h3>{{ isEditing ? '✏️ Modifier le bénéficiaire' : '➕ Ajouter un nouveau bénéficiaire' }}</h3>
+    <p class="text-muted">{{ isEditing ? 'Edit beneficiary' : 'Add a new beneficiary' }}</p>
+  </div>
+  
+  <form [formGroup]="benificiaireForm" (ngSubmit)="onSubmit()" class="benificiaire-form">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="nom">Nom *</label>
+        <input 
+          type="text" 
+          id="nom" 
+          formControlName="nom" 
+          class="form-control"
+          placeholder="Nom de famille"
+          [class.is-invalid]="benificiaireForm.get('nom')?.invalid && benificiaireForm.get('nom')?.touched"
+          [disabled]="isLoading"
+        >
+        <div class="invalid-feedback" *ngIf="benificiaireForm.get('nom')?.invalid && benificiaireForm.get('nom')?.touched">
+          Le nom est requis et doit contenir au moins 2 caractères
+        </div>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="prenom">Prénom *</label>
+        <input 
+          type="text" 
+          id="prenom" 
+          formControlName="prenom" 
+          class="form-control"
+          placeholder="Prénom"
+          [class.is-invalid]="benificiaireForm.get('prenom')?.invalid && benificiaireForm.get('prenom')?.touched"
+          [disabled]="isLoading"
+        >
+        <div class="invalid-feedback" *ngIf="benificiaireForm.get('prenom')?.invalid && benificiaireForm.get('prenom')?.touched">
+          Le prénom est requis et doit contenir au moins 2 caractères
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="cin">Numéro CIN *</label>
+        <input 
+          type="text" 
+          id="cin" 
+          formControlName="cin" 
+          class="form-control"
+          placeholder="Numéro CIN (8-10 caractères)"
+          [class.is-invalid]="benificiaireForm.get('cin')?.invalid && benificiaireForm.get('cin')?.touched"
+          [disabled]="isLoading"
+        >
+        <div class="invalid-feedback" *ngIf="benificiaireForm.get('cin')?.invalid && benificiaireForm.get('cin')?.touched">
+          Le numéro CIN est requis et doit contenir entre 8 et 10 caractères
+        </div>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="telephone">Téléphone *</label>
+        <input 
+          type="tel" 
+          id="telephone" 
+          formControlName="telephone" 
+          class="form-control"
+          placeholder="Numéro de téléphone"
+          [class.is-invalid]="benificiaireForm.get('telephone')?.invalid && benificiaireForm.get('telephone')?.touched"
+          [disabled]="isLoading"
+        >
+        <div class="invalid-feedback" *ngIf="benificiaireForm.get('telephone')?.invalid && benificiaireForm.get('telephone')?.touched">
+          Le téléphone est requis et doit être un numéro valide
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email *</label>
+      <input 
+        type="email" 
+        id="email" 
+        formControlName="email" 
+        class="form-control"
+        placeholder="Adresse email"
+        [class.is-invalid]="benificiaireForm.get('email')?.invalid && benificiaireForm.get('email')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="benificiaireForm.get('email')?.invalid && benificiaireForm.get('email')?.touched">
+        L'email est requis et doit être une adresse valide
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="adresse">Adresse *</label>
+      <textarea 
+        id="adresse" 
+        formControlName="adresse" 
+        class="form-control"
+        rows="2"
+        placeholder="Adresse complète"
+        [class.is-invalid]="benificiaireForm.get('adresse')?.invalid && benificiaireForm.get('adresse')?.touched"
+        [disabled]="isLoading"
+      ></textarea>
+      <div class="invalid-feedback" *ngIf="benificiaireForm.get('adresse')?.invalid && benificiaireForm.get('adresse')?.touched">
+        L'adresse est requise et doit contenir au moins 10 caractères
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="service">Type de service / produit reçu *</label>
+      <textarea 
+        id="service" 
+        formControlName="service" 
+        class="form-control"
+        rows="3"
+        placeholder="Ex: Analyses radiochimiques, microbiologiques, hydrologiques"
+        [class.is-invalid]="benificiaireForm.get('service')?.invalid && benificiaireForm.get('service')?.touched"
+        [disabled]="isLoading"
+      ></textarea>
+      <div class="invalid-feedback" *ngIf="benificiaireForm.get('service')?.invalid && benificiaireForm.get('service')?.touched">
+        Le service est requis et doit contenir au moins 5 caractères
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="isLoading">
+        Annuler
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="benificiaireForm.invalid || isLoading">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+        {{ isEditing ? 'Mettre à jour' : 'Ajouter le bénéficiaire' }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Benificiaires Table -->
+<div class="ben-card-container" *ngIf="!isFormVisible && !isLoading">
+  <table class="ben-table table table-dark table-bordered table-hover mt-4">
     <thead>
       <tr>
-        <th>Bénéficiaire</th>
-        <th>Type de service / produit reçu</th>
-        <th>Objectif ou domaine d’application</th>
+        <th>Nom & Prénom<br><small>Name / الاسم</small></th>
+        <th>CIN<br><small>ID Number / رقم الهوية</small></th>
+        <th>Contact<br><small>Contact Info / معلومات الاتصال</small></th>
+        <th>Adresse<br><small>Address / العنوان</small></th>
+        <th>Service<br><small>Service Type / نوع الخدمة</small></th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>Institutions de recherche/المؤسسات البحثية</td>
-        <td>Analyses radiochimiques, microbiologiques, hydrologiques</td>
-        <td>Soutien à la recherche scientifique et transfert technologique</td>
-      </tr>
-      <tr>
-        <td>Industrie agro-alimentaire/الصناعة الغذائية</td>
-        <td>Stérilisation, tests microbiologiques</td>
-        <td>Qualité et sécurité des produits</td>
-      </tr>
-      <tr>
-        <td>Cliniques/المراكز الصحية</td>
-        <td>Radiotraceurs, dosimétrie</td>
-        <td>Support à la médecine nucléaire</td>
-      </tr>
-      <tr>
-        <td>Organisations agricoles/المنظمات الزراعية</td>
-        <td>Technique SIT</td>
-        <td>Lutte contre les insectes</td>
-      </tr>
-      <tr>
-        <td>Administrations environnementales/الوكالات البيئية</td>
-        <td>Hydrologie isotopique</td>
-        <td>Gestion des ressources en eau</td>
-      </tr>
-      <tr>
-        <td>Partenaires nationaux/internationaux</td>
-        <td>Formations, coopérations</td>
-        <td>Développement de projets R&D</td>
+      <tr *ngFor="let benificiaire of benificiaires">
+        <td>
+          <strong>{{ benificiaire.nom }} {{ benificiaire.prenom }}</strong>
+        </td>
+        <td>
+          <code>{{ benificiaire.cin }}</code>
+        </td>
+        <td>
+          <div class="contact-info">
+            <div><i class="fas fa-phone"></i> {{ benificiaire.telephone }}</div>
+            <div><i class="fas fa-envelope"></i> {{ benificiaire.email }}</div>
+          </div>
+        </td>
+        <td>{{ benificiaire.adresse }}</td>
+        <td>{{ benificiaire.service }}</td>
+        <td>
+          <button class="btn btn-sm btn-primary me-2" (click)="editBenificiaire(benificiaire)" [disabled]="isLoading">
+            Modifier
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="deleteBenificiaire(benificiaire.id)" [disabled]="isLoading">
+            Supprimer
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
+</div>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="!isFormVisible && !isLoading && benificiaires.length === 0">
+  <p>Aucun bénéficiaire trouvé. Cliquez sur "Ajouter un bénéficiaire" pour commencer.</p>
 </div>

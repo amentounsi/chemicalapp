@@ -1,50 +1,155 @@
-<h2>📊 Gestion Produits / Services – CNSTN سيدي ثابت</h2>
+<div class="produit-header" appRevealOnScroll>
+  <h2 class="section-title">📊 Gestion Produits / Services – CNSTN سيدي ثابت</h2>
+  <button class="btn btn-success mt-2" (click)="addProduit()" *ngIf="!isFormVisible">Ajouter un produit</button>
+</div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Produit / Service<br><small>Product / الخدمة</small></th>
-            <th>Description<br><small>Description / الوصف</small></th>
-            <th>Domaine<br><small>Domain / المجال</small></th>
-            <th>Contact<br><small>Contact / الاتصال</small></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>URT – Rayonnements ionisants</td>
-            <td>Stérilisation par irradiation gamma & faisceau d’électrons<br><small>Gamma & electron beam sterilization / التعقيم بالإشعاع</small></td>
-            <td>Agroalimentaire, médical, industriel<br><small>Agro-food, medical, industrial / الصناعات الغذائية والطبية</small></td>
-            <td>URT Responsable</td>
-        </tr>
-        <tr>
-            <td>UHGI – Hydrologie isotopique</td>
-            <td>Suivi des eaux souterraines et traçage isotopique<br><small>Groundwater monitoring & isotopic tracing / تتبع المياه الجوفية</small></td>
-            <td>Environnement, hydraulique<br><small>Environment, hydraulics / البيئة والمياه</small></td>
-            <td>UHGI Responsable</td>
-        </tr>
-        <tr>
-            <td>URPH – Radiopharmaceutiques</td>
-            <td>Production de traceurs médicaux<br><small>Medical tracers production / إنتاج المركبات الطبية المشعة</small></td>
-            <td>Médecine nucléaire<br><small>Nuclear medicine / الطب النووي</small></td>
-            <td>URPH Responsable</td>
-        </tr>
-        <tr>
-            <td>URC – Radiochimie</td>
-            <td>Analyses radiochimiques et dosimétrie<br><small>Radio-chemical analysis & dosimetry / التحليل الإشعاعي</small></td>
-            <td>Sûreté nucléaire, industrie<br><small>Nuclear safety, industry / السلامة النووية</small></td>
-            <td>URC Responsable</td>
-        </tr>
-        <tr>
-            <td>Microbiologie</td>
-            <td>Tests microbiologiques & biologie moléculaire<br><small>Microbiological & molecular biology tests / اختبارات الأحياء الدقيقة</small></td>
-            <td>Agroalimentaire, biomédical<br><small>Agro-food, biomedical / الصناعات الغذائية والطبية</small></td>
-            <td>Lab Microbio Responsable</td>
-        </tr>
-        <tr>
-            <td>Technique des mâles stériles (SIT)</td>
-            <td>Production d’insectes stériles pour lutte biologique<br><small>Sterile insect production / إنتاج الحشرات العقيمة</small></td>
-            <td>Agriculture, protection des cultures<br><small>Agriculture, crop protection / الزراعة وحماية النباتات</small></td>
-            <td>SIT Responsable</td>
-        </tr>
-    </tbody>
+<!-- Success/Error Messages -->
+<div class="alert-container" *ngIf="message">
+  <div class="alert" [class]="'alert-' + (messageType === 'success' ? 'success' : 'danger')">
+    {{ message }}
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-container" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- Dynamic Form Section -->
+<div class="form-container" *ngIf="isFormVisible" appRevealOnScroll>
+  <div class="form-header">
+    <h3>{{ isEditing ? '✏️ Modifier le produit' : '➕ Ajouter un nouveau produit' }}</h3>
+    <p class="text-muted">{{ isEditing ? 'Edit product / service' : 'Add a new product / service' }}</p>
+  </div>
+  
+  <form [formGroup]="produitForm" (ngSubmit)="onSubmit()" class="produit-form">
+    <div class="form-group">
+      <label for="name">Nom du produit / service *</label>
+      <input 
+        type="text" 
+        id="name" 
+        formControlName="name" 
+        class="form-control"
+        placeholder="Entrez le nom du produit ou service"
+        [class.is-invalid]="produitForm.get('name')?.invalid && produitForm.get('name')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="produitForm.get('name')?.invalid && produitForm.get('name')?.touched">
+        Le nom est requis
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="volume">Volume (stock) *</label>
+      <input 
+        type="number" 
+        id="volume" 
+        formControlName="volume" 
+        class="form-control"
+        placeholder="0"
+        min="0"
+        [class.is-invalid]="produitForm.get('volume')?.invalid && produitForm.get('volume')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="produitForm.get('volume')?.invalid && produitForm.get('volume')?.touched">
+        Le volume doit être un nombre ≥ 0
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description *</label>
+      <textarea 
+        id="description" 
+        formControlName="description" 
+        class="form-control"
+        rows="4"
+        placeholder="Décrivez le produit ou service"
+        [class.is-invalid]="produitForm.get('description')?.invalid && produitForm.get('description')?.touched"
+        [disabled]="isLoading"
+      ></textarea>
+      <div class="invalid-feedback" *ngIf="produitForm.get('description')?.invalid && produitForm.get('description')?.touched">
+        La description est requise
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="domaine">Domaine *</label>
+      <input 
+        type="text" 
+        id="domaine" 
+        formControlName="domaine" 
+        class="form-control"
+        placeholder="Ex: Agroalimentaire, médical, industriel"
+        [class.is-invalid]="produitForm.get('domaine')?.invalid && produitForm.get('domaine')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="produitForm.get('domaine')?.invalid && produitForm.get('domaine')?.touched">
+        Le domaine est requis
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="contact">Contact *</label>
+      <input 
+        type="text" 
+        id="contact" 
+        formControlName="contact" 
+        class="form-control"
+        placeholder="Nom du responsable ou contact"
+        [class.is-invalid]="produitForm.get('contact')?.invalid && produitForm.get('contact')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="produitForm.get('contact')?.invalid && produitForm.get('contact')?.touched">
+        Le contact est requis
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="isLoading">
+        Annuler
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="produitForm.invalid || isLoading">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+        {{ isEditing ? 'Mettre à jour' : 'Ajouter le produit' }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Products Table -->
+<table *ngIf="!isFormVisible && !isLoading">
+  <thead>
+    <tr>
+      <th>Produit / Service<br><small>Product / الخدمة</small></th>
+      <th>Description<br><small>Description / الوصف</small></th>
+      <th>Domaine<br><small>Domain / المجال</small></th>
+      <th>Contact<br><small>Contact / الاتصال</small></th>
+      <th>Volume</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let produit of prod">
+      <td>{{ produit.name }}</td>
+      <td>{{ produit.description || '-' }}</td>
+      <td>{{ produit.domaine || '-' }}</td>
+      <td>{{ produit.contact || '-' }}</td>
+      <td>{{ produit.volume ?? 0 }}</td>
+      <td>
+        <button class="btn btn-sm btn-primary me-2" (click)="editProduit(produit)" [disabled]="isLoading">
+          Modifier
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="deleteProduit(produit.id)" [disabled]="isLoading">
+          Supprimer
+        </button>
+      </td>
+    </tr>
+  </tbody>
 </table>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="!isFormVisible && !isLoading && prod.length === 0">
+  <p>Aucun produit trouvé. Cliquez sur "Ajouter un produit" pour commencer.</p>
+</div>

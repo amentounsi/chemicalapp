@@ -1,1 +1,113 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  /* Keep existing app palette */
+  --app-bg-dark: #232526;
+  --app-bg-accent: #2c5364;
+  --app-primary: #00bfae;
+  --app-primary-700: #00a896;
+  --app-text-on-dark: #ffffff;
+
+  /* Orano-inspired accents (yellow) */
+  --orano-yellow: #ffd100;
+  --orano-yellow-700: #e6bf00;
+  --orano-ink: #0e1116;
+
+  /* Typography & spacing */
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --shadow-lg: 0 8px 26px rgba(0,0,0,0.18);
+  --container-max: 1200px;
+}
+
+html, body {
+  scroll-behavior: smooth;
+  background: #f6f7f9;
+}
+
+/* Accent underline for section titles */
+.section-title {
+  position: relative;
+  padding-bottom: 8px;
+}
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 64px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--orano-yellow), var(--app-primary));
+}
+
+/* Orano-like highlight badge */
+.badge-accent {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--orano-yellow);
+  color: var(--orano-ink);
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+/* Buttons retaining app colors with Orano accent outline */
+.btn-primary {
+  background: var(--app-primary);
+  color: var(--app-bg-dark);
+  border: none;
+}
+.btn-primary:hover { background: var(--app-primary-700); }
+.btn-outline-accent {
+  background: transparent;
+  color: var(--orano-ink);
+  border: 2px solid var(--orano-yellow);
+}
+.btn-outline-accent:hover {
+  background: var(--orano-yellow);
+  color: var(--orano-ink);
+}
+
+/* Card elevation */
+.elevated-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Reveal animations inspired by orano.fr subtle lifts/fades */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.reveal, [data-reveal] { opacity: 0; transform: translateY(16px); }
+.reveal.active, [data-reveal].active { opacity: 1; transform: none; animation: fadeUp .6s ease-out both; }
+
+.reveal-slow { animation-duration: .9s; }
+.reveal-fast { animation-duration: .4s; }
+
+/* Hero style similar feel to Orano but with app gradient */
+.hero-band {
+  background: linear-gradient(135deg, var(--app-bg-dark), var(--app-bg-accent));
+  color: var(--app-text-on-dark);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+.hero-cta {
+  display: inline-flex; gap: 10px; align-items: center;
+  padding: 10px 16px; border-radius: 999px;
+  background: var(--orano-yellow);
+  color: var(--orano-ink);
+  font-weight: 700;
+}
+
+/* Utility: container width */
+.container-xl { max-width: var(--container-max); margin: 0 auto; padding: 0 16px; }

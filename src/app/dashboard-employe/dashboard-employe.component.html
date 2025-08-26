@@ -1,0 +1,150 @@
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="welcome-section">
+      <h1>Bienvenue, {{ employeeInfo.nom }} !</h1>
+      <p class="subtitle">Tableau de bord - {{ employeeInfo.poste }}</p>
+    </div>
+    <div class="employee-badge">
+      <div class="badge-content">
+        <span class="badge-label">Matricule</span>
+        <span class="badge-value">{{ employeeInfo.matricule }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <h3>{{ stats.totalCommandes }}</h3>
+        <p>Total Commandes</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <h3>{{ stats.commandesApprouvees }}</h3>
+        <p>Approuvées</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <h3>{{ stats.commandesEnCours }}</h3>
+        <p>En Cours</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <h3>{{ stats.montantTotal }} DT</h3>
+        <p>Montant Total</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="dashboard-grid">
+    <!-- Employee Information Card -->
+    <div class="info-card employee-info">
+      <div class="card-header">
+        <h2>📋 Informations Employé</h2>
+      </div>
+      <div class="card-content">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Nom Complet:</span>
+            <span class="info-value">{{ employeeInfo.nom }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Poste:</span>
+            <span class="info-value">{{ employeeInfo.poste }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Département:</span>
+            <span class="info-value">{{ employeeInfo.departement }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ employeeInfo.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Téléphone:</span>
+            <span class="info-value">{{ employeeInfo.telephone }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Date d'embauche:</span>
+            <span class="info-value">{{ employeeInfo.dateEmbauche }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Statut:</span>
+            <span class="info-value status-active">{{ employeeInfo.statut }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Commands Card -->
+    <div class="info-card commands-history">
+      <div class="card-header">
+        <h2>📦 Historique des Commandes</h2>
+        <button class="btn-new-command" routerLink="/commande">Nouvelle Commande</button>
+      </div>
+      <div class="card-content">
+        <div class="commands-table">
+          <div class="table-header">
+            <div class="header-cell">Produit</div>
+            <div class="header-cell">Quantité</div>
+            <div class="header-cell">Date</div>
+            <div class="header-cell">Statut</div>
+            <div class="header-cell">Priorité</div>
+            <div class="header-cell">Total</div>
+          </div>
+          
+          <div class="table-row" *ngFor="let commande of commandes">
+            <div class="table-cell product-cell">
+              <span class="product-name">{{ commande.produit }}</span>
+            </div>
+            <div class="table-cell">{{ commande.quantite }}</div>
+            <div class="table-cell">{{ commande.date | date:'dd/MM/yyyy' }}</div>
+            <div class="table-cell">
+              <span class="status-badge" [ngClass]="getStatusClass(commande.statut)">
+                {{ commande.statut }}
+              </span>
+            </div>
+            <div class="table-cell">
+              <span class="priority-badge" [ngClass]="getPriorityClass(commande.priorite)">
+                {{ commande.priorite }}
+              </span>
+            </div>
+            <div class="table-cell total-cell">{{ commande.total }} DT</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h3>Actions Rapides</h3>
+    <div class="actions-grid">
+      <button class="action-btn primary" routerLink="/commande">
+        <span class="action-icon">➕</span>
+        Nouvelle Commande
+      </button>
+             <button class="action-btn secondary" routerLink="/benificiaires">
+         <span class="action-icon">👥</span>
+         Gestion Bénéficiaires
+       </button>
+      <button class="action-btn secondary">
+        <span class="action-icon">⚙️</span>
+        Modifier Profil
+      </button>
+    </div>
+  </div>
+</div>

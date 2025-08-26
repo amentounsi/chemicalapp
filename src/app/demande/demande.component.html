@@ -1,0 +1,218 @@
+<div class="demande-header" appRevealOnScroll>
+  <h2 class="section-title">📋 Gestion des Demandes – CNSTN سيدي ثابت</h2>
+  <button class="btn btn-success mt-2" (click)="addDemande()" *ngIf="!isFormVisible">Créer une demande</button>
+  <p class="subtitle">Système de demande de produits par les bénéficiaires</p>
+  <p class="subtitle-ar">نظام طلب المنتجات من المستفيدين</p>
+  <p class="subtitle-en">Product request system for beneficiaries</p>
+  <hr />
+</div>
+
+<!-- Success/Error Messages -->
+<div class="alert-container" *ngIf="message">
+  <div class="alert" [class]="'alert-' + (messageType === 'success' ? 'success' : 'danger')">
+    {{ message }}
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-container" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- Dynamic Form Section -->
+<div class="form-container" *ngIf="isFormVisible" appRevealOnScroll>
+  <div class="form-header">
+    <h3>{{ isEditing ? '✏️ Modifier la demande' : '➕ Créer une nouvelle demande' }}</h3>
+    <p class="text-muted">{{ isEditing ? 'Edit request' : 'Create a new request' }}</p>
+  </div>
+  
+  <form [formGroup]="demandeForm" (ngSubmit)="onSubmit()" class="demande-form">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="produit">Produit demandé *</label>
+        <select 
+          id="produit" 
+          formControlName="produit" 
+          class="form-control"
+          [class.is-invalid]="demandeForm.get('produit')?.invalid && demandeForm.get('produit')?.touched"
+          [disabled]="isLoading"
+        >
+          <option value="">Sélectionnez un produit</option>
+          <option *ngFor="let produit of produits" [value]="produit.id">
+            {{ produit.name }} - {{ produit.domaine }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="demandeForm.get('produit')?.invalid && demandeForm.get('produit')?.touched">
+          Le produit est requis
+        </div>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="benificiaire">Bénéficiaire *</label>
+        <select 
+          id="benificiaire" 
+          formControlName="benificiaire" 
+          class="form-control"
+          [class.is-invalid]="demandeForm.get('benificiaire')?.invalid && demandeForm.get('benificiaire')?.touched"
+          [disabled]="isLoading"
+        >
+          <option value="">Sélectionnez un bénéficiaire</option>
+          <option *ngFor="let benificiaire of benificiaires" [value]="benificiaire.id">
+            {{ benificiaire.nom }} {{ benificiaire.prenom }} - {{ benificiaire.cin }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="demandeForm.get('benificiaire')?.invalid && demandeForm.get('benificiaire')?.touched">
+          Le bénéficiaire est requis
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="quantite">Quantité demandée *</label>
+        <input 
+          type="number" 
+          id="quantite" 
+          formControlName="quantite" 
+          class="form-control"
+          placeholder="Nombre d'unités"
+          min="1"
+          [class.is-invalid]="demandeForm.get('quantite')?.invalid && demandeForm.get('quantite')?.touched"
+          [disabled]="isLoading"
+        >
+        <div class="invalid-feedback" *ngIf="demandeForm.get('quantite')?.invalid && demandeForm.get('quantite')?.touched">
+          La quantité doit être supérieure à 0
+        </div>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="dateLivraisonSouhaitee">Date de livraison souhaitée *</label>
+        <input 
+          type="date" 
+          id="dateLivraisonSouhaitee" 
+          formControlName="dateLivraisonSouhaitee" 
+          class="form-control"
+          [class.is-invalid]="demandeForm.get('dateLivraisonSouhaitee')?.invalid && demandeForm.get('dateLivraisonSouhaitee')?.touched"
+          [disabled]="isLoading"
+        >
+        <div class="invalid-feedback" *ngIf="demandeForm.get('dateLivraisonSouhaitee')?.invalid && demandeForm.get('dateLivraisonSouhaitee')?.touched">
+          La date de livraison est requise
+        </div>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label>Date de demande</label>
+        <div class="form-control-plaintext">
+          {{ isEditing ? 'Modification' : (today | date:'dd/MM/yyyy') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="motif">Motif de la demande *</label>
+      <textarea 
+        id="motif" 
+        formControlName="motif" 
+        class="form-control"
+        rows="3"
+        placeholder="Ex: Analyse pour projet de recherche sur la qualité de l'eau"
+        [class.is-invalid]="demandeForm.get('motif')?.invalid && demandeForm.get('motif')?.touched"
+        [disabled]="isLoading"
+      ></textarea>
+      <div class="invalid-feedback" *ngIf="demandeForm.get('motif')?.invalid && demandeForm.get('motif')?.touched">
+        Le motif est requis et doit contenir au moins 10 caractères
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="commentaire">Commentaires additionnels</label>
+      <textarea 
+        id="commentaire" 
+        formControlName="commentaire" 
+        class="form-control"
+        rows="2"
+        placeholder="Commentaires ou notes supplémentaires"
+        [disabled]="isLoading"
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="isLoading">
+        Annuler
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="demandeForm.invalid || isLoading">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+        {{ isEditing ? 'Mettre à jour' : 'Créer la demande' }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Demandes Table -->
+<div class="table-container" *ngIf="!isFormVisible && !isLoading">
+  <table>
+    <thead>
+      <tr>
+        <th>N° Demande<br><small>Request # / رقم الطلب</small></th>
+        <th>Date<br><small>Date / التاريخ</small></th>
+        <th>Bénéficiaire<br><small>Beneficiary / المستفيد</small></th>
+        <th>Produit<br><small>Product / المنتج</small></th>
+        <th>Quantité<br><small>Quantity / الكمية</small></th>
+        <th>Motif<br><small>Reason / السبب</small></th>
+        <th>Livraison souhaitée<br><small>Desired Delivery / التسليم المطلوب</small></th>
+        <th>Statut<br><small>Status / الحالة</small></th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let demande of demandes">
+        <td>
+          <strong>{{ demande.numeroDemande }}</strong>
+        </td>
+        <td>{{ demande.dateDemande | date:'dd/MM/yyyy' }}</td>
+        <td>
+          <div class="beneficiary-info">
+            <strong>{{ demande.benificiaire.nom }} {{ demande.benificiaire.prenom }}</strong><br>
+            <small>{{ demande.benificiaire.cin }}</small>
+          </div>
+        </td>
+        <td>
+          <div class="product-info">
+            <strong>{{ demande.produit.name }}</strong><br>
+            <small>{{ demande.produit.domaine }}</small>
+          </div>
+        </td>
+        <td>{{ demande.quantite }}</td>
+        <td>{{ demande.motif }}</td>
+        <td>{{ demande.dateLivraisonSouhaitee | date:'dd/MM/yyyy' }}</td>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge" [class]="getStatusBadgeClass(demande.statut || '')">
+              {{ getStatusLabel(demande.statut || '') }}
+            </span>
+            <select class="form-select form-select-sm" [ngModel]="demande.statut || 'EN_ATTENTE'"
+                    (ngModelChange)="changeStatut(demande, $event)"
+                    [disabled]="isLoading">
+              <option *ngFor="let opt of statutOptions" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary me-2" (click)="editDemande(demande)" [disabled]="isLoading">
+            Modifier
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="deleteDemande(demande.id)" [disabled]="isLoading">
+            Supprimer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="!isFormVisible && !isLoading && demandes.length === 0">
+  <p>Aucune demande trouvée. Cliquez sur "Créer une demande" pour commencer.</p>
+</div>

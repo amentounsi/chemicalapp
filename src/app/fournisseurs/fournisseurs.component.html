@@ -1,0 +1,159 @@
+<div class="fournisseurs-header" appRevealOnScroll>
+  <h2 class="section-title">🤝 Fournisseurs spécialisés – CNSTN سيدي ثابت</h2>
+  <button class="btn btn-success mt-2" (click)="addFournisseur()" *ngIf="!isFormVisible">Ajouter un fournisseur</button>
+  <p class="subtitle">Partenaires techniques pour équipements, sécurité, cryogénie, et radioprotection</p>
+  <p class="subtitle-ar">شركاؤنا التقنيون في المعدات، السلامة، التبريد العميق، والحماية من الإشعاع</p>
+  <p class="subtitle-en">Technical partners for equipment, security, cryogenics, and radiation protection</p>
+  <hr />
+</div>
+
+<!-- Success/Error Messages -->
+<div class="alert-container" *ngIf="message">
+  <div class="alert" [class]="'alert-' + (messageType === 'success' ? 'success' : 'danger')">
+    {{ message }}
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-container" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- Dynamic Form Section -->
+<div class="form-container" *ngIf="isFormVisible" appRevealOnScroll>
+  <div class="form-header">
+    <h3>{{ isEditing ? '✏️ Modifier le fournisseur' : '➕ Ajouter un nouveau fournisseur' }}</h3>
+    <p class="text-muted">{{ isEditing ? 'Edit supplier' : 'Add a new supplier' }}</p>
+  </div>
+  
+  <form [formGroup]="fournisseurForm" (ngSubmit)="onSubmit()" class="fournisseur-form">
+    <div class="form-group">
+      <label for="nom">Nom du fournisseur *</label>
+      <input 
+        type="text" 
+        id="nom" 
+        formControlName="nom" 
+        class="form-control"
+        placeholder="Entrez le nom du fournisseur"
+        [class.is-invalid]="fournisseurForm.get('nom')?.invalid && fournisseurForm.get('nom')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="fournisseurForm.get('nom')?.invalid && fournisseurForm.get('nom')?.touched">
+        Le nom est requis
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="specialite">Spécialité *</label>
+      <textarea 
+        id="specialite" 
+        formControlName="specialite" 
+        class="form-control"
+        rows="3"
+        placeholder="Décrivez la spécialité du fournisseur"
+        [class.is-invalid]="fournisseurForm.get('specialite')?.invalid && fournisseurForm.get('specialite')?.touched"
+        [disabled]="isLoading"
+      ></textarea>
+      <div class="invalid-feedback" *ngIf="fournisseurForm.get('specialite')?.invalid && fournisseurForm.get('specialite')?.touched">
+        La spécialité est requise
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="localisation">Localisation *</label>
+      <input 
+        type="text" 
+        id="localisation" 
+        formControlName="localisation" 
+        class="form-control"
+        placeholder="Ex: Tunis, Tunisie"
+        [class.is-invalid]="fournisseurForm.get('localisation')?.invalid && fournisseurForm.get('localisation')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="fournisseurForm.get('localisation')?.invalid && fournisseurForm.get('localisation')?.touched">
+        La localisation est requise
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email *</label>
+      <input 
+        type="email" 
+        id="email" 
+        formControlName="email" 
+        class="form-control"
+        placeholder="contact@example.com"
+        [class.is-invalid]="fournisseurForm.get('email')?.invalid && fournisseurForm.get('email')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="fournisseurForm.get('email')?.invalid && fournisseurForm.get('email')?.touched">
+        Un email valide est requis
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="telephone">Téléphone *</label>
+      <input 
+        type="text" 
+        id="telephone" 
+        formControlName="telephone" 
+        class="form-control"
+        placeholder="+216 XX XXX XXX"
+        [class.is-invalid]="fournisseurForm.get('telephone')?.invalid && fournisseurForm.get('telephone')?.touched"
+        [disabled]="isLoading"
+      >
+      <div class="invalid-feedback" *ngIf="fournisseurForm.get('telephone')?.invalid && fournisseurForm.get('telephone')?.touched">
+        Le téléphone est requis
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="isLoading">
+        Annuler
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="fournisseurForm.invalid || isLoading">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+        {{ isEditing ? 'Mettre à jour' : 'Ajouter le fournisseur' }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Fournisseurs Table -->
+<table *ngIf="!isFormVisible && !isLoading">
+  <thead>
+    <tr>
+      <th>Nom du fournisseur<br><small>Supplier / المزود</small></th>
+      <th>Spécialité<br><small>Specialty / التخصص</small></th>
+      <th>Localisation<br><small>Location / الموقع</small></th>
+      <th>Contact<br><small>Email / Téléphone</small></th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let f of fournisseurs">
+      <td>{{ f.nom }}</td>
+      <td>{{ f.specialite }}</td>
+      <td>{{ f.localisation }}</td>
+      <td>
+        <a [href]="'mailto:' + f.email">{{ f.email }}</a><br />
+        <span>{{ f.telephone }}</span>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-primary me-2" (click)="editFournisseur(f)" [disabled]="isLoading">
+          Modifier
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="deleteFournisseur(f.id)" [disabled]="isLoading">
+          Supprimer
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="!isFormVisible && !isLoading && fournisseurs.length === 0">
+  <p>Aucun fournisseur trouvé. Cliquez sur "Ajouter un fournisseur" pour commencer.</p>
+</div>

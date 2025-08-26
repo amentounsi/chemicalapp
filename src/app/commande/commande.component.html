@@ -1,0 +1,207 @@
+<div class="commande-header" appRevealOnScroll>
+  <h2 class="section-title">🛒 Gestion des Commandes – CNSTN سيدي ثابت</h2>
+  <button class="btn btn-success mt-2" (click)="addCommande()" *ngIf="!isFormVisible">Créer une commande</button>
+  <p class="subtitle">Système de commande et d'achat de produits auprès des fournisseurs</p>
+  <p class="subtitle-ar">نظام الطلبات وشراء المنتجات من الموردين</p>
+  <p class="subtitle-en">Order and purchase system for products from suppliers</p>
+  <hr />
+</div>
+
+<!-- Success/Error Messages -->
+<div class="alert-container" *ngIf="message">
+  <div class="alert" [class]="'alert-' + (messageType === 'success' ? 'success' : 'danger')">
+    {{ message }}
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-container" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- Dynamic Form Section -->
+<div class="form-container" *ngIf="isFormVisible" appRevealOnScroll>
+  <div class="form-header">
+    <h3>{{ isEditing ? '✏️ Modifier la commande' : '➕ Créer une nouvelle commande' }}</h3>
+    <p class="text-muted">{{ isEditing ? 'Edit order' : 'Create a new order' }}</p>
+  </div>
+  
+  <form [formGroup]="commandeForm" (ngSubmit)="onSubmit()" class="commande-form">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="produit">Produit *</label>
+        <select 
+          id="produit" 
+          formControlName="produit" 
+          class="form-control"
+          [class.is-invalid]="commandeForm.get('produit')?.invalid && commandeForm.get('produit')?.touched"
+          [disabled]="isLoading"
+        >
+          <option value="">Sélectionnez un produit</option>
+          <option *ngFor="let produit of produits" [value]="produit.id">
+            {{ produit.name }} - {{ produit.domaine }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="commandeForm.get('produit')?.invalid && commandeForm.get('produit')?.touched">
+          Le produit est requis
+        </div>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="fournisseur">Fournisseur *</label>
+        <select 
+          id="fournisseur" 
+          formControlName="fournisseur" 
+          class="form-control"
+          [class.is-invalid]="commandeForm.get('fournisseur')?.invalid && commandeForm.get('fournisseur')?.touched"
+          [disabled]="isLoading"
+        >
+          <option value="">Sélectionnez un fournisseur</option>
+          <option *ngFor="let fournisseur of fournisseurs" [value]="fournisseur.id">
+            {{ fournisseur.nom }} - {{ fournisseur.specialite }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="commandeForm.get('fournisseur')?.invalid && commandeForm.get('fournisseur')?.touched">
+          Le fournisseur est requis
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="quantite">Quantité *</label>
+        <input 
+          type="number" 
+          id="quantite" 
+          formControlName="quantite" 
+          class="form-control"
+          placeholder="Nombre d'unités"
+          min="1"
+          [class.is-invalid]="commandeForm.get('quantite')?.invalid && commandeForm.get('quantite')?.touched"
+          [disabled]="isLoading"
+        >
+        <div class="invalid-feedback" *ngIf="commandeForm.get('quantite')?.invalid && commandeForm.get('quantite')?.touched">
+          La quantité doit être supérieure à 0
+        </div>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="prixUnitaire">Prix unitaire (DT) *</label>
+        <input 
+          type="number" 
+          id="prixUnitaire" 
+          formControlName="prixUnitaire" 
+          class="form-control"
+          placeholder="0.00"
+          min="0"
+          step="0.01"
+          [class.is-invalid]="commandeForm.get('prixUnitaire')?.invalid && commandeForm.get('prixUnitaire')?.touched"
+          [disabled]="isLoading"
+        >
+        <div class="invalid-feedback" *ngIf="commandeForm.get('prixUnitaire')?.invalid && commandeForm.get('prixUnitaire')?.touched">
+          Le prix unitaire est requis
+        </div>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label>Prix total (DT)</label>
+        <div class="form-control-plaintext">
+          {{ (commandeForm.get('quantite')?.value || 0) * (commandeForm.get('prixUnitaire')?.value || 0) | number:'1.2-2' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="commentaire">Commentaire</label>
+      <textarea 
+        id="commentaire" 
+        formControlName="commentaire" 
+        class="form-control"
+        rows="3"
+        placeholder="Commentaires ou notes supplémentaires"
+        [disabled]="isLoading"
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="isLoading">
+        Annuler
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="commandeForm.invalid || isLoading">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+        {{ isEditing ? 'Mettre à jour' : 'Créer la commande' }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Commandes Table -->
+<div class="table-container" *ngIf="!isFormVisible && !isLoading">
+  <table>
+    <thead>
+      <tr>
+        <th>N° Commande<br><small>Order # / رقم الطلب</small></th>
+        <th>Date<br><small>Date / التاريخ</small></th>
+        <th>Produit<br><small>Product / المنتج</small></th>
+        <th>Fournisseur<br><small>Supplier / المورد</small></th>
+        <th>Quantité<br><small>Quantity / الكمية</small></th>
+        <th>Prix unitaire<br><small>Unit Price / السعر الوحدة</small></th>
+        <th>Prix total<br><small>Total Price / السعر الإجمالي</small></th>
+        <th>Statut<br><small>Status / الحالة</small></th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let commande of commandes">
+        <td>
+          <strong>{{ commande.numeroCommande }}</strong>
+        </td>
+        <td>{{ commande.dateCommande | date:'dd/MM/yyyy' }}</td>
+        <td>
+          <div class="product-info">
+            <strong>{{ commande.produit.name }}</strong><br>
+            <small>{{ commande.produit.domaine }}</small>
+          </div>
+        </td>
+        <td>
+          <div class="supplier-info">
+            <strong>{{ commande.fournisseur.nom }}</strong><br>
+            <small>{{ commande.fournisseur.localisation }}</small>
+          </div>
+        </td>
+        <td>{{ commande.quantite }}</td>
+        <td>{{ commande.prixUnitaire | number:'1.2-2' }} DT</td>
+        <td>
+          <strong>{{ commande.prixTotal | number:'1.2-2' }} DT</strong>
+        </td>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge" [class]="getStatusBadgeClass(commande.statut || '')">
+              {{ getStatusLabel(commande.statut || '') }}
+            </span>
+            <select class="form-select form-select-sm" [ngModel]="commande.statut || 'EN_ATTENTE'"
+                    (ngModelChange)="changeStatut(commande, $event)"
+                    [disabled]="isLoading">
+              <option *ngFor="let opt of statutOptions" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary me-2" (click)="editCommande(commande)" [disabled]="isLoading">
+            Modifier
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="deleteCommande(commande.id)" [disabled]="isLoading">
+            Supprimer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="!isFormVisible && !isLoading && commandes.length === 0">
+  <p>Aucune commande trouvée. Cliquez sur "Créer une commande" pour commencer.</p>
+</div>
